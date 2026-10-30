@@ -1,0 +1,23 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-2xl mx-auto px-4 py-20 text-center">
+  <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-extrabold shadow-inner">
+    <%= statusCode || 500 %>
+  </div>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4"><%= title || 'خطایی رخ داده است' %></h1>
+  <p class="text-gray-600 mb-8 leading-relaxed"><%= message %></p>
+
+  <% if (typeof error !== 'undefined' && error && error.stack) { %>
+    <div class="bg-gray-900 text-red-400 p-4 rounded-xl text-left font-mono text-xs overflow-x-auto mb-8 dir-ltr">
+      <pre><%= error.stack %></pre>
+    </div>
+  <% } %>
+
+  <div class="flex justify-center gap-4">
+    <a href="/" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-lg transition shadow-md">
+      بازگشت به صفحه اصلی
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-200">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">پیشخوان مدیریت CMS</h1>
+      <p class="text-sm text-gray-500 mt-1">مدیریت محتوا، رسانه‌ها، چیدمان Drag & Drop و سطوح دسترسی</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/admin/layouts" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm transition">
+        مدیریت چیدمان درگ اند دراپ
+      </a>
+      <a href="/admin/posts/create" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm transition">
+        + افزودن پست جدید (با کد HTML)
+      </a>
+    </div>
+  </div>
+
+  <!-- کارت‌های آماری زنده از دیتابیس -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-gray-500">پست‌ها و مطالب</span>
+        <span class="p-2 bg-indigo-50 text-indigo-600 rounded-lg text-lg">📝</span>
+      </div>
+      <div class="text-3xl font-extrabold text-gray-900"><%= stats.totalPosts %></div>
+      <a href="/admin/posts" class="text-xs text-indigo-600 hover:underline mt-2 inline-block">مدیریت و ایجاد پست‌ها →</a>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-gray-500">صفحات و چیدمان‌ها</span>
+        <span class="p-2 bg-purple-50 text-purple-600 rounded-lg text-lg">📑</span>
+      </div>
+      <div class="text-3xl font-extrabold text-gray-900"><%= stats.totalPages %></div>
+      <a href="/admin/layouts" class="text-xs text-purple-600 hover:underline mt-2 inline-block">مرتب‌سازی Drag & Drop →</a>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-gray-500">فایل‌ها و رسانه‌ها</span>
+        <span class="p-2 bg-emerald-50 text-emerald-600 rounded-lg text-lg">🖼️</span>
+      </div>
+      <div class="text-3xl font-extrabold text-gray-900"><%= stats.totalMedia %></div>
+      <a href="/admin/media" class="text-xs text-emerald-600 hover:underline mt-2 inline-block">کتابخانه آپلود رسانه →</a>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-gray-500">کاربران و نقش‌ها</span>
+        <span class="p-2 bg-amber-50 text-amber-600 rounded-lg text-lg">👥</span>
+      </div>
+      <div class="text-3xl font-extrabold text-gray-900"><%= stats.totalUsers %></div>
+      <a href="/admin/users" class="text-xs text-amber-600 hover:underline mt-2 inline-block">تخصیص نقش‌ها (RBAC) →</a>
+    </div>
+  </div>
+
+  <!-- آخرین مطالب ثبت شده در دیتابیس -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+    <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+      <h3 class="font-bold text-gray-900 text-base">آخرین مطالب ذخیره شده در سیستم</h3>
+      <a href="/admin/posts" class="text-xs text-indigo-600 hover:underline font-medium">مشاهده همه پست‌ها</a>
+    </div>
+
+    <% if (recentPosts && recentPosts.length > 0) { %>
+      <div class="divide-y divide-gray-100">
+        <% recentPosts.forEach(p => { %>
+          <div class="py-3 flex items-center justify-between">
+            <div>
+              <a href="/posts/<%= p.slug %>" target="_blank" class="font-bold text-gray-900 text-sm hover:text-indigo-600 transition">
+                <%= p.title %>
+              </a>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-xs text-gray-400 font-mono">/posts/<%= p.slug %></span>
+                <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[11px] font-semibold"><%= p.post_type %></span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="/admin/posts/edit/<%= p.id %>" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition font-medium">
+                ویرایش
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="text-xs text-gray-400 py-4 text-center">هنوز پستی ثبت نشده است.</p>
+    <% } %>
+  </div>
+
+</div>
+
+<%- include('../partials/footer') %>

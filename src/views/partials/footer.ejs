@@ -1,0 +1,44 @@
+</main>
+
+<!-- فوتر یکپارچه سایت (یک بار تعریف شده و در تمام صفحات در پایین قرار می‌گیرد) -->
+<footer class="bg-gray-900 text-gray-400 border-t border-gray-800 mt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">
+            C
+          </div>
+          <span class="font-bold text-lg text-white">سیستم CMS اختصاصی نودجی‌اس</span>
+        </div>
+        <p class="text-sm text-gray-400 leading-relaxed">
+          یک سیستم مدیریت محتوای ماژولار و رابطه‌ای با پشتیبانی از کدهای HTML، ساختار لایه‌بندی درگ اند دراپ، مدیریت رسانه‌ها و کنترل دسترسی بر پایه کوکی.
+        </p>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4 text-sm">دسترسی سریع</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/" class="hover:text-white transition">صفحه اصلی</a></li>
+          <li><a href="/posts" class="hover:text-white transition">همه مقالات</a></li>
+          <li><a href="/auth/login" class="hover:text-white transition">ورود به حساب</a></li>
+          <li><a href="/api/v1/posts" class="hover:text-white transition">مستندات REST API</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-4 text-sm">وضعیت سرور و معماری</h4>
+        <p class="text-xs text-gray-500 mb-2">اجرا شده روی محیط Node.js v24 با موتور رندرینگ EJS و پایگاه داده رابطه‌ای SQLite.</p>
+        <div class="inline-flex items-center gap-2 bg-gray-800 px-3 py-1.5 rounded-full text-xs text-green-400">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          سرور فعال و متصل به دیتابیس
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-800 mt-8 pt-8 text-center text-xs text-gray-500">
+      تمامی حقوق محفوظ است © <%= new Date().getFullYear() %> | توسعه داده شده با Node.js & Express
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

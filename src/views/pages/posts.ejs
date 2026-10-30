@@ -1,0 +1,57 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  
+  <div class="mb-10 text-center">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">مقالات و مطالب وب‌سایت</h1>
+    <p class="text-gray-500 max-w-2xl mx-auto text-sm">
+      مطالب، اخبار و محصولات ثبت‌شده در پایگاه داده رابطه‌ای که مستقیماً کدهای HTML خود را رندر می‌کنند.
+    </p>
+  </div>
+
+  <% if (posts.length === 0) { %>
+    <div class="bg-white p-12 rounded-2xl border border-gray-200 text-center max-w-md mx-auto">
+      <div class="text-4xl mb-3">📭</div>
+      <h3 class="font-bold text-gray-800 mb-1">هنوز پستی منتشر نشده است!</h3>
+      <p class="text-xs text-gray-500 mb-4">از پنل مدیریت وارد شوید و اولین مطلب را بنویسید.</p>
+      <a href="/admin/posts/create" class="bg-indigo-600 text-white text-xs px-4 py-2 rounded-lg font-medium">ایجاد پست</a>
+    </div>
+  <% } else { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% posts.forEach(post => { %>
+        <article class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col overflow-hidden group">
+          <div class="p-6 flex-grow flex flex-col">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
+                <%= post.post_type || 'مطلب' %>
+              </span>
+              <% if (post.category) { %>
+                <span class="text-xs text-gray-400">• <%= post.category %></span>
+              <% } %>
+            </div>
+
+            <h2 class="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition mb-3 leading-snug">
+              <a href="/posts/<%= post.slug %>">
+                <%= post.title %>
+              </a>
+            </h2>
+
+            <p class="text-gray-600 text-sm leading-relaxed mb-6 flex-grow line-clamp-3">
+              <%= post.excerpt || 'برای مطالعه متن کامل و مشاهده کدهای HTML کلیک کنید...' %>
+            </p>
+
+            <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+              <span><%= post.author_name || 'نویسنده سایت' %></span>
+              <a href="/posts/<%= post.slug %>" class="text-indigo-600 font-bold hover:underline flex items-center gap-1">
+                مشاهده و اجرا ←
+              </a>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
+
+</div>
+
+<%- include('../partials/footer') %>

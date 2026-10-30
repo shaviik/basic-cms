@@ -1,0 +1,105 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <div class="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <a href="/admin/dashboard" class="text-xs text-indigo-600 hover:underline">← بازگشت به داشبورد</a>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">مدیریت کاربران و سطوح دسترسی (RBAC)</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        تخصیص نقش‌های سوپر ادمین، ادمین و کاربر عادی و ذخیره دائم در پایگاه داده SQLite.
+      </p>
+    </div>
+  </div>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="mb-6 p-4 bg-green-50 border-r-4 border-green-500 text-green-700 text-sm rounded-xl">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <!-- راهنمای نقش‌ها -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="p-4 rounded-xl bg-purple-50 border border-purple-200">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-3 h-3 rounded-full bg-purple-600"></span>
+        <strong class="text-purple-900 text-sm">SUPER_ADMIN</strong>
+      </div>
+      <p class="text-xs text-purple-700 leading-relaxed">دسترسی کامل به کاربران، نقش‌ها، کدهای HTML، ساختار دیتابیس و پنل.</p>
+    </div>
+
+    <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-3 h-3 rounded-full bg-indigo-600"></span>
+        <strong class="text-indigo-900 text-sm">ADMIN</strong>
+      </div>
+      <p class="text-xs text-indigo-700 leading-relaxed">مدیریت مقالات، آپلود فایل در رسانه‌ها و چیدمان صفحات.</p>
+    </div>
+
+    <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-3 h-3 rounded-full bg-gray-600"></span>
+        <strong class="text-gray-900 text-sm">USER</strong>
+      </div>
+      <p class="text-xs text-gray-600 leading-relaxed">کاربر عادی فرانت‌اند، بدون دسترسی به پنل مدیریت.</p>
+    </div>
+  </div>
+
+  <!-- جدول کاربران در دیتابیس -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <table class="w-full text-right text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold text-xs">
+        <tr>
+          <th class="p-4">کاربر</th>
+          <th class="p-4">ایمیل</th>
+          <th class="p-4">نقش فعلی</th>
+          <th class="p-4">تغییر سطح دسترسی در دیتابیس</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% users.forEach(u => { %>
+          <tr class="hover:bg-gray-50/60 transition">
+            <td class="p-4 font-bold text-gray-900 flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-white font-bold flex items-center justify-center text-sm">
+                <%= u.full_name ? u.full_name.charAt(0) : 'U' %>
+              </div>
+              <div>
+                <div><%= u.full_name %></div>
+                <div class="text-xs text-gray-400 font-normal">شناسه کاربر: #<%= u.id %></div>
+              </div>
+            </td>
+            <td class="p-4 font-mono text-xs text-gray-600 dir-ltr text-right"><%= u.email %></td>
+            <td class="p-4">
+              <% if (u.role === 'SUPER_ADMIN') { %>
+                <span class="px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">SUPER_ADMIN</span>
+              <% } else if (u.role === 'ADMIN') { %>
+                <span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold">ADMIN</span>
+              <% } else { %>
+                <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold">USER</span>
+              <% } %>
+            </td>
+            <td class="p-4">
+              <form action="/admin/users/<%= u.id %>/role" method="POST" class="flex items-center gap-2">
+                <select name="role_name" class="px-3 py-1.5 rounded-lg border border-gray-300 text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+                  <% roles.forEach(r => { %>
+                    <option value="<%= r.name %>" <%= u.role === r.name ? 'selected' : '' %>>
+                      <%= r.name %>
+                    </option>
+                  <% }) %>
+                </select>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">
+                  ذخیره نقش
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<%- include('../partials/footer') %>

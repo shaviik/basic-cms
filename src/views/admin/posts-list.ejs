@@ -1,0 +1,103 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-200">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <a href="/admin/dashboard" class="text-xs text-indigo-600 hover:underline">← بازگشت به داشبورد</a>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">مدیریت پست‌ها و مطالب</h1>
+      <p class="text-sm text-gray-500 mt-1">لیست پست‌های ذخیره‌شده در پایگاه داده با فیلدهای تفکیک‌شده و کدهای HTML</p>
+    </div>
+
+    <a href="/admin/posts/create" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+      <span>+</span> ایجاد پست جدید (با کد HTML)
+    </a>
+  </div>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="mb-6 p-4 bg-green-50 border-r-4 border-green-500 text-green-700 text-sm rounded-xl">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="mb-6 p-4 bg-red-50 border-r-4 border-red-500 text-red-700 text-sm rounded-xl">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <!-- جدول پست‌های دیتابیس -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <% if (posts.length === 0) { %>
+      <div class="p-12 text-center text-gray-500">
+        <div class="text-4xl mb-3">📝</div>
+        <p class="font-medium text-gray-800">هنوز هیچ پستی ثبت نشده است!</p>
+        <p class="text-xs text-gray-400 mt-1">با کلیک بر روی دکمه «ایجاد پست جدید»، اولین مطلب با کدهای HTML را ایجاد کنید.</p>
+        <a href="/admin/posts/create" class="mt-4 inline-block bg-indigo-600 text-white text-xs px-4 py-2 rounded-lg">ایجاد پست</a>
+      </div>
+    <% } else { %>
+      <table class="w-full text-right text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold text-xs">
+          <tr>
+            <th class="p-4">عنوان پست</th>
+            <th class="p-4">نوع (Post Type)</th>
+            <th class="p-4">دسته‌بندی</th>
+            <th class="p-4">وضعیت</th>
+            <th class="p-4">تاریخ ایجاد</th>
+            <th class="p-4 text-center">عملیات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <% posts.forEach(post => { %>
+            <tr class="hover:bg-gray-50/60 transition">
+              <td class="p-4 font-bold text-gray-900">
+                <a href="/posts/<%= post.slug %>" target="_blank" class="hover:text-indigo-600 transition flex items-center gap-1.5">
+                  <span><%= post.title %></span>
+                  <span class="text-gray-400 text-xs">↗</span>
+                </a>
+                <span class="text-xs text-gray-400 block font-mono font-normal dir-ltr text-right">/posts/<%= post.slug %></span>
+              </td>
+              <td class="p-4">
+                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
+                  <%= post.post_type_title || 'نامشخص' %>
+                </span>
+              </td>
+              <td class="p-4">
+                <span class="text-xs text-gray-600">
+                  <%= post.category_title || '—' %>
+                </span>
+              </td>
+              <td class="p-4">
+                <% if (post.status === 'published') { %>
+                  <span class="px-2 py-0.5 bg-green-50 text-green-700 rounded-full text-xs font-medium">منتشر شده</span>
+                <% } else { %>
+                  <span class="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full text-xs font-medium">پیش‌نویس</span>
+                <% } %>
+              </td>
+              <td class="p-4 text-xs text-gray-500 font-mono">
+                <%= post.created_at ? post.created_at.split(' ')[0] : '—' %>
+              </td>
+              <td class="p-4">
+                <div class="flex items-center justify-center gap-2">
+                  <a href="/admin/posts/edit/<%= post.id %>" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition text-xs font-bold" title="ویرایش">
+                    ویرایش
+                  </a>
+                  <form action="/admin/posts/delete/<%= post.id %>" method="POST" onsubmit="return confirm('آیا از حذف این مطلب مطمئن هستید؟');">
+                    <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition text-xs font-bold" title="حذف">
+                      حذف
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,101 @@
+<%- include('../partials/header') %>
+
+<% blocks.forEach(block => { %>
+
+  <% if (block.type === 'HERO') { %>
+    <!-- بخش معرفی و هیرو (Hero Section) -->
+    <section class="bg-gradient-to-b from-indigo-50/50 via-white to-gray-50 py-20 border-b border-gray-100">
+      <div class="max-w-5xl mx-auto px-4 text-center">
+        <span class="inline-block py-1 px-3 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full mb-6">
+          🚀 سیستم CMS ماژولار و رابطه‌ای با SQLite و Node.js
+        </span>
+        <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
+          مدیریت محتوا با اجرای مستقیم کدهای HTML
+        </h1>
+        <p class="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+          دیتابیس رابطه‌ای، امکان تعریف و ذخیره کدهای خام HTML، هدر و فوتر یکپارچه، لایه‌بندی Drag & Drop و کنترل سطوح دسترسی با کوکی‌های HttpOnly.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="/admin/posts/create" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg shadow-indigo-200 transition">
+            + ایجاد پست جدید با کد HTML
+          </a>
+          <a href="/admin/layouts" class="bg-white hover:bg-gray-50 text-gray-800 font-medium px-6 py-3 rounded-xl border border-gray-200 shadow-sm transition">
+            تغییر چیدمان Drag & Drop
+          </a>
+          <a href="/api/v1/posts" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-green-400 font-mono text-sm px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+            REST API خروجی
+          </a>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <% if (block.type === 'HTML_CODE' && block.content_html) { %>
+    <!-- بلوک سفارشی کدهای HTML با ترتیب دلخواه تعیین شده در Drag & Drop -->
+    <section class="max-w-7xl mx-auto px-4 py-8">
+      <div class="border border-indigo-100 rounded-2xl overflow-hidden bg-white shadow-sm p-4">
+        <div class="flex items-center justify-between text-xs text-gray-400 mb-2 pb-2 border-b border-gray-100">
+          <span class="font-bold text-gray-600"><%= block.title %></span>
+          <span class="font-mono bg-purple-50 text-purple-700 px-2 py-0.5 rounded">بلوک HTML رندر شده از دیتابیس</span>
+        </div>
+        <div class="custom-block-content">
+          <%- block.content_html %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <% if (block.type === 'POSTS_GRID') { %>
+    <!-- شبکه آخرین مطالب ذخیره شده در دیتابیس -->
+    <section class="max-w-7xl mx-auto px-4 py-16">
+      <div class="flex items-center justify-between mb-10 pb-4 border-b border-gray-200">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900">آخرین مطالب و مقالات</h2>
+          <p class="text-xs text-gray-500 mt-1">خوانده شده مستقیماً از جدول posts در SQLite</p>
+        </div>
+        <a href="/posts" class="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition">
+          مشاهده تمام مطالب ←
+        </a>
+      </div>
+
+      <% if (latestPosts.length === 0) { %>
+        <p class="text-center text-gray-400 py-12">هیچ پستی ثبت نشده است.</p>
+      <% } else { %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <% latestPosts.forEach(post => { %>
+            <article class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col p-6">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-semibold">
+                  <%= post.post_type || 'مطلب' %>
+                </span>
+                <% if (post.category) { %>
+                  <span class="text-xs text-gray-400">• <%= post.category %></span>
+                <% } %>
+              </div>
+
+              <h3 class="text-lg font-bold text-gray-900 hover:text-indigo-600 transition mb-2">
+                <a href="/posts/<%= post.slug %>"><%= post.title %></a>
+              </h3>
+
+              <p class="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-2 flex-grow">
+                <%= post.excerpt %>
+              </p>
+
+              <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                <span><%= post.author_name %></span>
+                <a href="/posts/<%= post.slug %>" class="text-indigo-600 font-bold hover:underline">
+                  مطالعه و اجرای کد ←
+                </a>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  <% } %>
+
+<% }) %>
+
+<%- include('../partials/footer') %>

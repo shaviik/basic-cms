@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="bg-white p-8 md:p-12 rounded-2xl border border-gray-200 shadow-sm">
+    <div class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full mb-4">
+      درباره پروژه
+    </div>
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-6">سیستم مدیریت محتوای اختصاصی (Custom CMS)</h1>
+    
+    <div class="space-y-6 text-gray-700 leading-relaxed text-sm">
+      <p>
+        این پروژه یک سیستم مدیریت محتوای مدرن است که بر پایه معماری ماژولار <strong>Node.js</strong>، دیتابیس رابطه‌ای محلی <strong>SQLite (Native node:sqlite)</strong>، موتور رندر سرور <strong>EJS</strong> و پروتکل احراز هویت امن با <strong>کوکی‌های HttpOnly</strong> طراحی شده است.
+      </p>
+
+      <h2 class="text-lg font-bold text-gray-900 pt-4 border-t border-gray-100">ویژگی‌های اصلی سیستم:</h2>
+      <ul class="list-disc list-inside space-y-2 pr-2">
+        <li><strong>پایگاه داده رابطه‌ای (Relational):</strong> جداول با کلیدهای خارجی (Foreign Keys) به هم متصل هستند (پست‌ها، انواع پست، دسته‌بندی‌ها، کاربران، رسانه‌ها و چیدمان‌ها).</li>
+        <li><strong>فیلد اختصاصی کدهای خام HTML:</strong> امکان نوشتن کدهای دلخواه HTML، انیمیشن‌های CSS و اسکریپت‌های تعاملی و اجرای مستقیم آن‌ها در خروجی بدون سانسور یا خراب شدن کدهای قالب.</li>
+        <li><strong>هدر و فوتر یکپارچه و لایه‌بندی Drag & Drop:</strong> هدر و فوتر یک بار تعریف شده و در تمام صفحات نمایش داده می‌شوند و چیدمان بلوک‌ها با کشیدن و رها کردن قابل تغییر است.</li>
+        <li><strong>کتابخانه رسانه (Media Uploads):</strong> آپلود متمرکز تصاویر و فایل‌ها با Multer، ذخیره متادیتا در دیتابیس و کپی لینک مستقیم.</li>
+        <li><strong>کنترل دسترسی ۳ سطحی با کوکی (RBAC):</strong> نقش‌های سوپر ادمین، ادمین و کاربر عادی با کوکی‌های نفوذناپذیر در برابر حملات XSS.</li>
+        <li><strong>آمادگی کامل برای اتصال فریم‌ورک‌های آینده:</strong> پشتیبانی کامل از REST API به صورت موازی با صفحات SSR سرور.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

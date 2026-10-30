@@ -1,0 +1,196 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <div class="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <a href="/admin/posts" class="text-xs text-indigo-600 hover:underline">← بازگشت به لیست پست‌ها</a>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+        <%= post ? 'ویرایش پست' : 'ایجاد پست جدید با کدهای خام HTML' %>
+      </h1>
+      <p class="text-sm text-gray-500 mt-1">
+        فیلدهای تفکیک‌شده عنوان، نامک، دسته‌بندی و فیلد اختصاصی کدهای خام HTML با ذخیره‌سازی در پایگاه داده.
+      </p>
+    </div>
+  </div>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="mb-6 p-4 bg-red-50 border-r-4 border-red-500 text-red-700 text-sm rounded-xl">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <!-- فرم واقعی ذخیره‌سازی پست در پایگاه داده SQLite -->
+  <form action="<%= post ? '/admin/posts/edit/' + post.id : '/admin/posts/create' %>" method="POST" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- ۲ ستون سمت راست: عنوان، نامک و ادیتور کد HTML -->
+      <div class="md:col-span-2 space-y-6">
+        
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+          <div>
+            <label for="title" class="block text-sm font-bold text-gray-700 mb-1">عنوان پست *</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              value="<%= post ? post.title : '' %>"
+              placeholder="مثال: معرفی ویژگی‌های پیشرفته معماری وب" 
+              required
+              oninput="autoGenerateSlug(this.value)"
+              class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition"
+            >
+          </div>
+
+          <div>
+            <label for="slug" class="block text-sm font-bold text-gray-700 mb-1">نامک اینترنتی (Slug) *</label>
+            <input 
+              type="text" 
+              id="slug" 
+              name="slug" 
+              value="<%= post ? post.slug : '' %>"
+              placeholder="intro-to-web-architecture" 
+              required
+              class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-left dir-ltr transition"
+            >
+            <span class="text-xs text-gray-400 mt-1 block">آدرس دسترسی در فرانت‌اند: <code>/posts/نامک</code></span>
+          </div>
+
+          <div>
+            <label for="excerpt" class="block text-sm font-bold text-gray-700 mb-1">خلاصه کوتاه پست</label>
+            <textarea 
+              id="excerpt" 
+              name="excerpt" 
+              rows="2" 
+              class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition"
+              placeholder="توضیح مختصری درباره این مطلب..."
+            ><%= post ? post.excerpt : '' %></textarea>
+          </div>
+        </div>
+
+        <!-- فیلد اختصاصی کدهای HTML -->
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <label for="htmlCode" class="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <span>💻</span> فیلد اختصاصی کدهای خام HTML و استایل‌ها *
+            </label>
+            <button type="button" onclick="setSampleHtml()" class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition font-medium">
+              درج کد نمونه تعاملی
+            </button>
+          </div>
+
+          <textarea 
+            id="htmlCode" 
+            name="content_html" 
+            rows="10" 
+            required
+            class="w-full font-mono text-xs p-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none text-left dir-ltr bg-gray-900 text-green-400 leading-relaxed transition"
+            placeholder="<div><h1>کد دلخواه HTML خود را اینجا بنویسید...</h1></div>"
+          ><%= post ? post.content_html : '' %></textarea>
+
+          <!-- پیش‌نمایش و رندر در لحظه -->
+          <div class="mt-4 pt-4 border-t border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-gray-600 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                پیش‌نمایش زنده کد HTML (Live Rendering):
+              </span>
+              <span class="text-xs text-gray-400">بدون Escape شدن مستقیماً رندر می‌شود</span>
+            </div>
+
+            <div id="htmlPreview" class="p-4 rounded-xl border border-dashed border-gray-300 bg-gray-50 min-h-[100px] overflow-x-auto">
+              <span class="text-xs text-gray-400 italic">پیش‌نمایش کد در اینجا اجرا می‌شود...</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ۱ ستون سایدبار: روابط و وضعیت -->
+      <div class="space-y-6">
+        
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+          <h3 class="text-sm font-bold text-gray-900 pb-2 border-b border-gray-100">روابط جدول‌ها (Relational)</h3>
+
+          <div>
+            <label for="post_type_id" class="block text-xs font-bold text-gray-700 mb-1">نوع پست (Post Type) *</label>
+            <select id="post_type_id" name="post_type_id" required class="w-full px-3 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+              <% postTypes.forEach(pt => { %>
+                <option value="<%= pt.id %>" <%= (post && post.post_type_id === pt.id) ? 'selected' : '' %>>
+                  <%= pt.title %> (<%= pt.slug %>)
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div>
+            <label for="category_id" class="block text-xs font-bold text-gray-700 mb-1">دسته‌بندی (Category)</label>
+            <select id="category_id" name="category_id" class="w-full px-3 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="">بدون دسته‌بندی</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>" <%= (post && post.category_id === cat.id) ? 'selected' : '' %>>
+                  <%= cat.title %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div>
+            <label for="status" class="block text-xs font-bold text-gray-700 mb-1">وضعیت انتشار</label>
+            <select id="status" name="status" class="w-full px-3 py-2.5 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="published" <%= (post && post.status === 'published') ? 'selected' : '' %>>انتشار عمومی</option>
+              <option value="draft" <%= (post && post.status === 'draft') ? 'selected' : '' %>>پیش‌نویس</option>
+            </select>
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md shadow-emerald-100 transition duration-150">
+            <%= post ? '💾 ذخیره تغییرات پست' : '🚀 ثبت و ذخیره قطعی در دیتابیس' %>
+          </button>
+        </div>
+
+        <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl text-xs text-indigo-900 leading-relaxed">
+          💡 <strong>نحوه ذخیره‌سازی:</strong><br>
+          این فرم مستقیماً به روت <code>/admin/posts/<%= post ? 'edit/' + post.id : 'create' %></code> ارسال شده و با دستورات Prepared Statement در جدول <code>posts</code> ذخیره می‌گردد.
+        </div>
+
+      </div>
+
+    </div>
+  </form>
+
+</div>
+
+<script>
+  const htmlInput = document.getElementById('htmlCode');
+  const previewDiv = document.getElementById('htmlPreview');
+  const slugInput = document.getElementById('slug');
+
+  function renderPreview() {
+    previewDiv.innerHTML = htmlInput.value || '<span class="text-xs text-gray-400 italic">پیش‌نمایش خالی است...</span>';
+  }
+
+  htmlInput.addEventListener('input', renderPreview);
+  if (htmlInput.value) renderPreview();
+
+  function autoGenerateSlug(title) {
+    if (!slugInput.value || !<%= post ? 'true' : 'false' %>) {
+      slugInput.value = title.trim().toLowerCase().replace(/[\s\W-]+/g, '-');
+    }
+  }
+
+  function setSampleHtml() {
+    const sample = `<div class="p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl shadow-xl">
+  <h3 class="text-2xl font-bold mb-2">⚡ کامپوننت پویا ذخیره شده در SQLite</h3>
+  <p class="text-blue-100 text-sm mb-4">این کد HTML همراه با استایل‌ها و رویدادهای جاوااسکریپت مستقیماً از دیتابیس اجرا می‌شود.</p>
+  <button type="button" onclick="alert('کد جاوااسکریپت درون فیلد دیتابیس با موفقیت فعال شد!')" class="bg-white text-blue-700 font-bold px-4 py-2 rounded-xl text-sm shadow-md hover:bg-gray-100 transition">
+    تست اجرای رویداد جاوااسکریپت
+  </button>
+</div>`;
+    htmlInput.value = sample;
+    renderPreview();
+  }
+</script>
+
+<%- include('../partials/footer') %>

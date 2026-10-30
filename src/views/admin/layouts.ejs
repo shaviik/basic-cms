@@ -1,0 +1,173 @@
+<%- include('../partials/header') %>
+
+<!-- کتابخانه SortableJS برای کشیدن و رها کردن (Drag and Drop) -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-200">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <a href="/admin/dashboard" class="text-xs text-indigo-600 hover:underline">← بازگشت به داشبورد</a>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">مدیریت چیدمان صفحات (Drag & Drop Layouts)</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        ترتیب نمایش بلوک‌ها را با ماوس جابه‌جا کنید و با دکمه ذخیره، ترتیب جدید را در دیتابیس ثبت نمایید.
+      </p>
+    </div>
+
+    <button id="saveLayoutBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+      <span>💾</span> ذخیره ترتیب در دیتابیس
+    </button>
+  </div>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="mb-6 p-4 bg-green-50 border-r-4 border-green-500 text-green-700 text-sm rounded-xl">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <div id="saveAlert" class="hidden mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl text-sm flex items-center justify-between">
+    <span id="alertMsg">✅ چیدمان جدید با موفقیت در دیتابیس ذخیره شد و در صفحه اصلی اعمال گردید!</span>
+    <button onclick="this.parentElement.classList.add('hidden')" class="text-green-600 font-bold">×</button>
+  </div>
+
+  <!-- لیست بلوک‌های لایه‌اوت به صورت Drag and Drop -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+    <h3 class="text-base font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center justify-between">
+      <span>بلوک‌های فعال در: <strong class="text-indigo-600"><%= pageTitle %></strong></span>
+      <span class="text-xs text-gray-400 font-normal">برای تغییر موقعیت، بلوک‌ها را بگیرید و بکشید</span>
+    </h3>
+
+    <div id="blockList" class="space-y-3">
+      <% blocks.forEach((block, index) => { %>
+        <div 
+          data-id="<%= block.id %>" 
+          class="block-item group p-4 rounded-xl border <%= block.is_fixed ? 'border-indigo-200 bg-indigo-50/40' : 'border-gray-200 bg-white hover:border-indigo-400' %> shadow-sm flex items-center justify-between cursor-grab active:cursor-grabbing transition"
+        >
+          <div class="flex items-center gap-4">
+            <div class="text-gray-400 group-hover:text-indigo-600 transition flex flex-col items-center">
+              <span class="text-xs font-bold">:::</span>
+            </div>
+
+            <span class="order-badge w-7 h-7 rounded-lg bg-gray-100 text-gray-700 font-bold text-xs flex items-center justify-center">
+              <%= index + 1 %>
+            </span>
+
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-gray-900 text-sm"><%= block.title %></span>
+                <% if (block.is_fixed) { %>
+                  <span class="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-medium">یکپارچه (Layout)</span>
+                <% } else { %>
+                  <span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full font-mono"><%= block.type %></span>
+                <% } %>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5 font-mono">شناسه: #<%= block.id %> | ترتیب فعلی در دیتابیس: <%= block.sort_order %></p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <% if (!block.is_fixed) { %>
+              <form action="/admin/layouts/blocks/delete/<%= block.id %>" method="POST" onsubmit="return confirm('آیا این بلوک حذف شود؟');">
+                <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-medium px-2 py-1 rounded hover:bg-red-50 transition">
+                  حذف بلوک
+                </button>
+              </form>
+            <% } %>
+            <span class="text-xs text-gray-400 select-none">جابه‌جایی ↑↓</span>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- فرم افزودن بلوک جدید کد خام HTML به صفحه -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+    <h3 class="text-base font-bold text-gray-900 mb-2">+ افزودن بلوک جدید اختصاصی کد HTML</h3>
+    <p class="text-xs text-gray-500 mb-4">می‌توانید کدهای سفارشی HTML مانند بنر، فرم خبرنامه یا ویجت بسازید تا در صفحه نمایش یابد.</p>
+
+    <form action="/admin/layouts/blocks/create" method="POST" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-gray-700 mb-1">عنوان بلوک</label>
+        <input 
+          type="text" 
+          name="title" 
+          placeholder="مثال: بنر اطلاع‌رسانی تخفیف ویژه" 
+          required 
+          class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+        >
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-gray-700 mb-1">کد خام HTML</label>
+        <textarea 
+          name="content_html" 
+          rows="4" 
+          required 
+          class="w-full font-mono text-xs p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none text-left dir-ltr bg-gray-900 text-green-400"
+          placeholder="<div class='p-4 bg-indigo-600 text-white rounded-xl text-center'>محتوای بنر شما</div>"
+        ></textarea>
+      </div>
+
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition">
+        + افزودن این بلوک به لایه‌اوت
+      </button>
+    </form>
+  </div>
+
+</div>
+
+<script>
+  const blockListEl = document.getElementById('blockList');
+  
+  new Sortable(blockListEl, {
+    animation: 200,
+    ghostClass: 'opacity-40',
+    onEnd: function() {
+      updateBadges();
+    }
+  });
+
+  function updateBadges() {
+    const items = blockListEl.querySelectorAll('.block-item');
+    items.forEach((item, index) => {
+      const badge = item.querySelector('.order-badge');
+      if (badge) badge.textContent = index + 1;
+    });
+  }
+
+  // ارسال ترتیب جدید به سرور و دیتابیس با متد POST
+  document.getElementById('saveLayoutBtn').addEventListener('click', async () => {
+    const items = blockListEl.querySelectorAll('.block-item');
+    const orderList = Array.from(items).map((el, i) => ({
+      id: parseInt(el.getAttribute('data-id'), 10),
+      order: i + 1
+    }));
+
+    try {
+      const res = await fetch('/admin/layouts/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderList })
+      });
+      const data = await res.json();
+
+      const alertBox = document.getElementById('saveAlert');
+      const alertMsg = document.getElementById('alertMsg');
+      if (data.success) {
+        alertMsg.textContent = '✅ ' + data.message;
+        alertBox.className = 'mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl text-sm flex items-center justify-between';
+      } else {
+        alertMsg.textContent = '❌ خطا: ' + data.message;
+        alertBox.className = 'mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl text-sm flex items-center justify-between';
+      }
+      alertBox.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      alert('خطا در برقراری ارتباط با سرور: ' + err.message);
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>
